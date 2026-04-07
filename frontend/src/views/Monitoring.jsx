@@ -440,7 +440,7 @@ const Monitoring = ({ dashboardState }) => {
                     : <div className="camera-frame-placeholder">AWAITING FIRST FRAME...</div>
                 ) : (
                   isBackendReady
-                    ? <StreamImg src="/api/cameras/primary/feed" className="camera-feed-img" alt="Standby feed" />
+                    ? <StreamImg src={`${API_BASE}/api/cameras/primary/feed`} className="camera-feed-img" alt="Standby feed" />
                     : <div className="camera-frame-placeholder">
                         <div style={{ width: 20, height: 20, border: '2px solid rgba(255,255,255,0.1)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 8 }} />
                         CONNECTING TO BACKEND...
@@ -504,7 +504,7 @@ const Monitoring = ({ dashboardState }) => {
                 <div className="camera-frame-wrapper">
                   {active ? (
                     isBackendReady
-                      ? <StreamImg src={`/api/cameras/${cam._id}/feed`} alt={cam.name} className="camera-feed-img" />
+                      ? <StreamImg src={`${API_BASE}/api/cameras/${cam._id}/feed`} alt={cam.name} className="camera-feed-img" />
                       : <div className="camera-frame-placeholder" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                           <div style={{ width: 20, height: 20, border: '2px solid rgba(255,255,255,0.1)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
                           CONNECTING...
@@ -636,7 +636,7 @@ const Monitoring = ({ dashboardState }) => {
           <div className="primary-sensor-container" style={{ position: 'relative', minHeight: '240px' }}>
             {(cameras.length > 0 && cameras[0].is_active !== false && isBackendReady) ? (
               <StreamImg 
-                src={`/api/cameras/${cameras[0]._id}/feed`} 
+                src={`${API_BASE}/api/cameras/${cameras[0]._id}/feed`} 
                 alt={cameras[0].name} 
                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 8 }} 
               />
