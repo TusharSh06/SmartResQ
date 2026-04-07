@@ -1,24 +1,40 @@
+# ─────────────────────────────────────────
+# Smart Resq — FINAL PRODUCTION BUILD
+# Optimized for Railway (No Docker)
+# ─────────────────────────────────────────
+
+# ── Web Framework ────────────────────────
 flask==3.0.3
 flask-socketio==5.3.6
 flask-cors==4.0.0
-eventlet==0.35.1
-gunicorn==20.1.0
-pymongo==4.6.3
+
+# ── Server ──────────────────────────────
+gunicorn==21.2.0
+
+# ── Core CV + Image Processing ──────────
+opencv-python-headless==4.9.0.80
+numpy>=1.23.5,<1.27.0
+pillow==10.3.0
+
+# ── AI (CPU Optimized) ──────────────────
+tensorflow-cpu==2.15.0
+
+# ── OCR ─────────────────────────────────
+pytesseract==0.3.10
+
+# ── Database ────────────────────────────
+pymongo[srv]==4.6.3
+
+# ── Auth & Security ─────────────────────
 bcrypt==4.1.2
 pyjwt==2.8.0
 
-numpy==1.26.4
-pandas==2.2.2
-pillow==10.3.0
-opencv-python-headless==4.9.0.80
-
---extra-index-url https://download.pytorch.org/whl/cpu
-torch
-torchvision
-easyocr==1.7.1
-tensorflow-cpu==2.15.0
-pytesseract==0.3.10
-
+# ── Alerts / External APIs ──────────────
 twilio==9.0.0
-python-dotenv==1.0.1
 requests==2.31.0
+
+# ── Config ─────────────────────────────
+python-dotenv==1.0.1
+
+# ── Utilities ──────────────────────────
+gdown==5.1.0
