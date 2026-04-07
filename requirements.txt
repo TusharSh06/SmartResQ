@@ -9,9 +9,9 @@ flask-socketio==5.3.6
 flask-cors==4.0.0
 
 # ── Server ──────────────────────────────
-# Pinned to 20.1.0 to maintain -k eventlet support
+# Pinned to 20.1.0 and 0.30.2 to fix the ALREADY_HANDLED import bug
 gunicorn==20.1.0
-eventlet==0.35.1
+eventlet==0.30.2
 
 # ── Core CV + Image Processing ──────────
 opencv-python-headless==4.9.0.80
