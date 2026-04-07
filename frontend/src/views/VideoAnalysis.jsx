@@ -218,6 +218,10 @@ const VideoAnalysis = ({ videoAnalysisState, resetVideoAnalysis }) => {
   const [showReplay, setShowReplay]         = useState(false);
   const [capturedFrames, setCapturedFrames] = useState([]);
   const [fullScreenImage, setFullScreenImage] = useState(null);
+  
+  // Settings State
+  const [threshold, setThreshold] = useState(10);
+  const [frameSkip, setFrameSkip] = useState(3);
 
   const fileInputRef  = useRef(null);
   const liveFrameRef  = useRef(null);
@@ -299,7 +303,7 @@ const VideoAnalysis = ({ videoAnalysisState, resetVideoAnalysis }) => {
       const analyseResp = await fetch(`${API_BASE}/api/analyze-video`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ threshold: 50, frame_skip: 5 })
+        body: JSON.stringify({ threshold: threshold, frame_skip: frameSkip })
       });
       const analyseData = await analyseResp.json();
       if (!analyseResp.ok) throw new Error(analyseData.error || 'Failed to start analysis');
@@ -404,46 +408,134 @@ const VideoAnalysis = ({ videoAnalysisState, resetVideoAnalysis }) => {
               </div>
             )}
 
-            {/* Controls */}
+            {/* Settings & Controls */}
             {file && (
-              <div className="va-controls" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                {!isAnalyzing ? (
-                  <button className="btn-premium btn-start" onClick={uploadAndAnalyse} disabled={isUploading}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                    {uiStatus === 'READY' || isComplete ? 'Re-Analyse' : 'Analyse Video'}
-                  </button>
-                ) : (
-                  <button className="btn-premium btn-stop" onClick={stopAnalysis}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-                    Stop Analysis
-                  </button>
-                )}
+              <div style={{ marginTop: '1.5rem' }}>
+                <div style={{ 
+                  background: 'var(--bg-page)', 
+                  border: '1px solid var(--border)', 
+                  borderRadius: '12px', 
+                  padding: '1.5rem', 
+                  marginBottom: '1rem',
+                  boxShadow: 'var(--shadow-sm)'
+                }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '1.2rem', letterSpacing: '0.5px' }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    ANALYSIS SETTINGS
+                  </div>
+                  
+                  {/* Threshold */}
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                      <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>Detection Threshold</label>
+                      <span style={{ 
+                        background: 'rgba(239,68,68,0.1)', color: '#EF4444', 
+                        padding: '4px 8px', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 700 
+                      }}>{threshold}%</span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="10" 
+                      max="99" 
+                      value={threshold} 
+                      onChange={(e) => setThreshold(Number(e.target.value))}
+                      disabled={isAnalyzing}
+                      style={{ width: '100%', accentColor: '#2563EB', marginBottom: '0.5rem', cursor: isAnalyzing ? 'not-allowed' : 'pointer' }}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      <span>10% — More sensitive</span>
+                      <span>99% — Stricter</span>
+                    </div>
+                    {threshold < 40 && (
+                      <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        Low threshold — may flag non-accidents
+                      </div>
+                    )}
+                  </div>
 
-                {/* ── REPLAY BUTTON ── shown after analysis completes ── */}
-                {isComplete && capturedFrames.length > 0 && (
-                  <button
-                    id="btn-replay-analysis"
-                    className="btn-premium"
-                    onClick={() => setShowReplay(true)}
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(37,99,235,0.15), rgba(99,102,241,0.15))',
-                      border: '1px solid rgba(37,99,235,0.4)',
-                      color: '#93C5FD',
+                  {/* Frame Skip */}
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                      <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>Frame Sampling Rate</label>
+                      <span style={{ 
+                        background: 'rgba(37,99,235,0.1)', color: '#2563EB', 
+                        padding: '4px 8px', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 700 
+                      }}>Every {frameSkip} frames</span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="1" 
+                      max="15" 
+                      value={frameSkip} 
+                      onChange={(e) => setFrameSkip(Number(e.target.value))}
+                      disabled={isAnalyzing}
+                      style={{ width: '100%', accentColor: '#2563EB', marginBottom: '0.5rem', cursor: isAnalyzing ? 'not-allowed' : 'pointer' }}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      <span>1 — Every frame (slow)</span>
+                      <span>15 — Fast scan</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="va-controls" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {!isAnalyzing ? (
+                    <button className="btn-premium btn-start" onClick={uploadAndAnalyse} disabled={isUploading} style={{ width: '100%', padding: '12px' }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                      {uiStatus === 'READY' || isComplete ? 'Re-Analyse' : 'Analyse Video'}
+                    </button>
+                  ) : (
+                    <button className="btn-premium btn-stop" onClick={stopAnalysis} style={{ width: '100%', padding: '12px' }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                      Stop Analysis
+                    </button>
+                  )}
+
+                  {/* ── REPLAY BUTTON ── shown after analysis completes ── */}
+                  {isComplete && capturedFrames.length > 0 && (
+                    <button
+                      id="btn-replay-analysis"
+                      className="btn-premium"
+                      onClick={() => setShowReplay(true)}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        background: 'linear-gradient(135deg, rgba(37,99,235,0.05), rgba(99,102,241,0.05))',
+                        border: '1px solid rgba(37,99,235,0.3)',
+                        color: '#60A5FA',
+                      }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                        <path d="M19 3 v4 M19 21 v-4" opacity="0.5"/>
+                      </svg>
+                      Replay Analysis
+                    </button>
+                  )}
+
+                  <button 
+                    className="btn-icon" 
+                    onClick={reset} 
+                    title="Upload new video" 
+                    style={{ 
+                      width: '100%', 
+                      padding: '10px', 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      gap: '8px',
+                      background: 'var(--bg-page)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '8px',
+                      color: 'var(--text-muted)'
                     }}
                   >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <polygon points="5 3 19 12 5 21 5 3"/>
-                      <path d="M19 3 v4 M19 21 v-4" opacity="0.5"/>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
                     </svg>
-                    Replay Analysis
+                    Reset
                   </button>
-                )}
-
-                <button className="btn-icon" onClick={reset} title="Upload new video">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
-                  </svg>
-                </button>
+                </div>
               </div>
             )}
           </div>
