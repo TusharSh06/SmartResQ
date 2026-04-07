@@ -1,21 +1,21 @@
 flask==3.0.3
 flask-socketio==5.3.6
 flask-cors==4.0.0
+eventlet==0.33.3
+gunicorn==20.1.0
 
 numpy==1.26.4
 pandas==2.2.2
 pillow==10.3.0
-
 opencv-python-headless==4.9.0.80
 
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+torchvision
 easyocr==1.7.1
+tensorflow-cpu==2.15.0
 pytesseract==0.3.10
-
-tensorflow==2.21.0
 
 twilio==9.0.0
 python-dotenv==1.0.1
 requests==2.31.0
-
-eventlet==0.33.3
-gunicorn==21.2.0
