@@ -9,9 +9,9 @@ flask-socketio==5.3.6
 flask-cors==4.0.0
 
 # ── Server ──────────────────────────────
-# Pinned to 20.1.0 and 0.30.2 to fix the ALREADY_HANDLED import bug
-gunicorn==20.1.0
-eventlet==0.30.2
+gunicorn==21.2.0
+gevent==23.9.1
+gevent-websocket==0.10.1
 
 # ── Core CV + Image Processing ──────────
 opencv-python-headless==4.9.0.80

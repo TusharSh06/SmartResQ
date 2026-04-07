@@ -1,6 +1,6 @@
 # pyre-ignore-all-errors
-import eventlet
-eventlet.monkey_patch()
+from gevent import monkey
+monkey.patch_all()
 
 """
 Smart Resq Web Dashboard
