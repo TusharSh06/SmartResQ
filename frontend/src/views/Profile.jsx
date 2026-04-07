@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Cropper from 'react-easy-crop';
 import getCroppedImg from '../utils/cropImage';
 
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+
 const Profile = () => {
   const [profile, setProfile] = useState({
     username: '',
@@ -29,7 +31,7 @@ const Profile = () => {
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem('auth_token');
-      const res = await fetch('/api/user/profile', {
+      const res = await fetch(`${API_BASE}/api/user/profile`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -87,7 +89,7 @@ const Profile = () => {
 
     try {
       const token = localStorage.getItem('auth_token');
-      const res = await fetch('/api/user/profile', {
+      const res = await fetch(`${API_BASE}/api/user/profile`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

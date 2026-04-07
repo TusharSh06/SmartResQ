@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+
 const Settings = () => {
     const [cameras, setCameras] = useState([]);
     const [activeTab, setActiveTab] = useState('video');
@@ -21,7 +23,7 @@ const Settings = () => {
 
     const fetchCameras = async () => {
         try {
-            const res = await fetch('/api/cameras', {
+            const res = await fetch(`${API_BASE}/api/cameras`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
             });
             const data = await res.json();
@@ -35,7 +37,7 @@ const Settings = () => {
 
     const fetchSettings = async () => {
         try {
-            const res = await fetch('/api/settings', {
+            const res = await fetch(`${API_BASE}/api/settings`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
             });
             const data = await res.json();
@@ -60,7 +62,7 @@ const Settings = () => {
     const renameCamera = async (id, newName) => {
         if (!newName.trim()) return;
         try {
-            const res = await fetch(`/api/cameras/${id}/rename`, {
+            const res = await fetch(`${API_BASE}/api/cameras/${id}/rename`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -76,7 +78,7 @@ const Settings = () => {
     const saveSettings = async () => {
         setIsSaving(true);
         try {
-            const res = await fetch('/api/settings', {
+            const res = await fetch(`${API_BASE}/api/settings`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',

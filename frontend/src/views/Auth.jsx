@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './TechStack/TechStack.css';
 
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+
 /* ── tiny shared styles ──────────────────────────────── */
 const IS = {                // inputStyle
   width: '100%', padding: '0.75rem 1rem', borderRadius: '8px',
@@ -136,7 +138,7 @@ const Auth = ({ onLogin }) => {
 
     setIsLoading(true); setError(''); setInfo('');
     try {
-      const res  = await fetch('/api/auth/send-otp', {
+      const res  = await fetch(`${API_BASE}/api/auth/send-otp`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: username.trim().toLowerCase() })
       });
@@ -157,7 +159,7 @@ const Auth = ({ onLogin }) => {
     if (otp.length !== 6) return setError('Please enter the complete 6-digit code.');
     setIsLoading(true); setError('');
     try {
-      const res  = await fetch('/api/auth/verify-otp', {
+      const res  = await fetch(`${API_BASE}/api/auth/verify-otp`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: username.trim().toLowerCase(), otp })
       });
@@ -173,7 +175,7 @@ const Auth = ({ onLogin }) => {
 
   /* ── Final signup after OTP OK ──────────────────── */
   const handleCompleteSignup = async () => {
-    const res  = await fetch('/api/auth/signup', {
+    const res  = await fetch(`${API_BASE}/api/auth/signup`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         username: username.trim().toLowerCase(),
@@ -194,7 +196,7 @@ const Auth = ({ onLogin }) => {
   const handleLogin = async (e) => {
     e.preventDefault(); setError(''); setIsLoading(true);
     try {
-      const res  = await fetch('/api/auth/login', {
+      const res  = await fetch(`${API_BASE}/api/auth/login`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: username.trim().toLowerCase(), password })
       });
@@ -210,7 +212,7 @@ const Auth = ({ onLogin }) => {
     if (resendTimer > 0) return;
     setIsLoading(true); setError(''); setInfo('');
     try {
-      const res  = await fetch('/api/auth/send-otp', {
+      const res  = await fetch(`${API_BASE}/api/auth/send-otp`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: username.trim().toLowerCase() })
       });

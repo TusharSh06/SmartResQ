@@ -150,12 +150,15 @@ const HWPill = ({ label, value, progress, color }) => (
 // ─────────────────────────────────────────────────────────────────────────────
 // useAuthFetch — wraps fetch with auth header, returns null on 401
 // ─────────────────────────────────────────────────────────────────────────────
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+
 const useAuthFetch = () => {
   return useCallback(async (url, options = {}) => {
+    const fullUrl = url.startsWith('/') ? `${API_BASE}${url}` : url;
     const token = localStorage.getItem('auth_token');
     const headers = { 'Authorization': `Bearer ${token}`, ...options.headers };
     try {
-      const res = await fetch(url, { ...options, headers });
+      const res = await fetch(fullUrl, { ...options, headers });
       if (!res.ok) return null;
       return await res.json();
     } catch {

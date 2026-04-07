@@ -16,6 +16,8 @@ import AdminPanel from './views/AdminPanel';
 import PendingApproval from './views/PendingApproval';
 import { useSocket } from './hooks/useSocket';
 
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+
 function App() {
   const [activeView, setActiveView] = useState('overview');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -44,7 +46,7 @@ function App() {
       setIsVerifying(false);
       return;
     }
-    fetch('/api/auth/verify', {
+    fetch(`${API_BASE}/api/auth/verify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token })
@@ -72,7 +74,7 @@ function App() {
     setIsActionPending(true);
     setActionError(null);
     try {
-      const res = await fetch('/api/start', {
+      const res = await fetch(`${API_BASE}/api/start`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
       });
@@ -94,7 +96,7 @@ function App() {
     setIsActionPending(true);
     setActionError(null);
     try {
-      const res = await fetch('/api/stop', {
+      const res = await fetch(`${API_BASE}/api/stop`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
       });
