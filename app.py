@@ -51,12 +51,10 @@ from pymongo import MongoClient
 import pymongo
 from werkzeug.security import generate_password_hash, check_password_hash
 
-try:
-    MONGO_URI = Config.MONGO_URI
-except:
-    MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://arunvashisth80_db_user:arun8080@smartresq.fii5rvi.mongodb.net/")
+MONGO_URI = Config.MONGO_URI
 
 mongo_client = MongoClient(MONGO_URI)
+print(f"✅ Successfully initialized MongoDB connection to {MONGO_URI.split('@')[-1] if '@' in MONGO_URI else 'Cluster'}")
 users_col = mongo_client["smartresq"].users
 otp_col   = mongo_client["smartresq"].otp_store
 cameras_col = mongo_client["smartresq"].cameras
@@ -539,6 +537,8 @@ def update_settings():
         return jsonify({'error': 'Unauthorized'}), 401
     
     data = request.get_json() or {}
+    data.pop('_id', None)
+    
     # We only store one settings document
     settings_col.update_one(
         {},

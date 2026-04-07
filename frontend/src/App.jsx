@@ -111,42 +111,7 @@ function App() {
     }
   };
 
-  const renderView = () => {
-    switch (activeView) {
-      case 'overview':       
-        return <Overview 
-          dashboardState={dashboardState} 
-          onStart={handleStart} 
-          onSwitchAnalysis={() => setActiveView('video-analysis')} 
-        />;
-      case 'profile':
-        return <Profile />;
-      case 'monitoring':     
-        return <Monitoring dashboardState={dashboardState} />;
-      case 'video-analysis': 
-        return <VideoAnalysis 
-          videoAnalysisState={videoAnalysisState}
-          resetVideoAnalysis={resetVideoAnalysis}
-          emitAction={emitAction} 
-        />;
-      case 'archive':        
-        return <Archive />;
-      case 'alerts':
-        return <Alerts socket={socket} />;
-      case 'tech-stack':     
-        return <TechStack />;
-      case 'settings':
-        return <Settings />;
-      case 'support':
-        return <Support />;
-      case 'developer':
-        return <Developer />;
-      case 'admin':
-        return userRole === 'admin' ? <AdminPanel /> : <Overview dashboardState={dashboardState} />;
-      default:               
-        return <Overview dashboardState={dashboardState} onStart={handleStart} onSwitchAnalysis={() => setActiveView('video-analysis')} />;
-    }
-  };
+  // renderView logic converted to persistent tabs to prevent unmounting and camera reconnections
 
   const handleLogout = () => {
     localStorage.removeItem('auth_token');
@@ -197,8 +162,38 @@ function App() {
         />
         
         <div className="content-area">
-          <div className={`dashboard-view active`}>
-            {renderView()}
+          <div style={{ display: (!activeView || activeView === 'overview') ? 'block' : 'none', height: '100%' }}>
+            <Overview dashboardState={dashboardState} onStart={handleStart} onSwitchAnalysis={() => setActiveView('video-analysis')} />
+          </div>
+          <div style={{ display: activeView === 'profile' ? 'block' : 'none', height: '100%' }}>
+            <Profile />
+          </div>
+          <div style={{ display: activeView === 'monitoring' ? 'block' : 'none', height: '100%' }}>
+            <Monitoring dashboardState={dashboardState} />
+          </div>
+          <div style={{ display: activeView === 'video-analysis' ? 'block' : 'none', height: '100%' }}>
+            <VideoAnalysis videoAnalysisState={videoAnalysisState} resetVideoAnalysis={resetVideoAnalysis} emitAction={emitAction} />
+          </div>
+          <div style={{ display: activeView === 'archive' ? 'block' : 'none', height: '100%' }}>
+            <Archive />
+          </div>
+          <div style={{ display: activeView === 'alerts' ? 'block' : 'none', height: '100%' }}>
+            <Alerts socket={socket} />
+          </div>
+          <div style={{ display: activeView === 'tech-stack' ? 'block' : 'none', height: '100%' }}>
+            <TechStack />
+          </div>
+          <div style={{ display: activeView === 'settings' ? 'block' : 'none', height: '100%' }}>
+            <Settings />
+          </div>
+          <div style={{ display: activeView === 'support' ? 'block' : 'none', height: '100%' }}>
+            <Support />
+          </div>
+          <div style={{ display: activeView === 'developer' ? 'block' : 'none', height: '100%' }}>
+            <Developer />
+          </div>
+          <div style={{ display: activeView === 'admin' ? 'block' : 'none', height: '100%' }}>
+            {userRole === 'admin' ? <AdminPanel /> : <Overview dashboardState={dashboardState} />}
           </div>
         </div>
       </main>

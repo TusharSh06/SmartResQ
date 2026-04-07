@@ -21,7 +21,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 // • On error: shows "RETRYING..." and waits 5s before reconnecting
 // • Cancels retry timer on unmount (prevents memory leaks / React 18 warnings)
 // ─────────────────────────────────────────────────────────────────────────────
-const StreamImg = ({ src, alt, className }) => {
+const StreamImg = ({ src, alt, className, style }) => {
   const [state, setState] = useState('loading'); // 'loading' | 'live' | 'error'
   const [activeSrc, setActiveSrc] = useState(src);
   const retryRef = useRef(null);
@@ -59,12 +59,11 @@ const StreamImg = ({ src, alt, className }) => {
 
   return (
     <>
-      {/* Always render img so browser can load; hide when error */}
       <img
         src={activeSrc}
         alt={alt}
         className={className}
-        style={{ display: state === 'error' ? 'none' : 'block' }}
+        style={{ display: state === 'error' ? 'none' : 'block', ...style }}
         onLoad={handleLoad}
         onError={handleError}
       />
@@ -632,7 +631,13 @@ const Monitoring = ({ dashboardState }) => {
           </div>
 
           <div className="primary-sensor-container" style={{ position: 'relative', minHeight: '240px' }}>
-            {hasFrame
+            {(cameras.length > 0 && cameras[0].is_active !== false && isBackendReady) ? (
+              <StreamImg 
+                src={`/api/cameras/${cameras[0]._id}/feed`} 
+                alt={cameras[0].name} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 8 }} 
+              />
+            ) : hasFrame
               ? <img ref={liveFrameRef} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 8 }} alt="Live" />
               : <div className="placeholder-box">
                   <div className="loading-state">
