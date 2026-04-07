@@ -9,7 +9,9 @@ flask-socketio==5.3.6
 flask-cors==4.0.0
 
 # ── Server ──────────────────────────────
-gunicorn==21.2.0
+# Pinned to 20.1.0 to maintain -k eventlet support
+gunicorn==20.1.0
+eventlet==0.35.1
 
 # ── Core CV + Image Processing ──────────
 opencv-python-headless==4.9.0.80
@@ -17,9 +19,13 @@ numpy>=1.23.5,<1.27.0
 pillow==10.3.0
 
 # ── AI (CPU Optimized) ──────────────────
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+torchvision
 tensorflow-cpu==2.15.0
 
 # ── OCR ─────────────────────────────────
+easyocr==1.7.1
 pytesseract==0.3.10
 
 # ── Database ────────────────────────────
