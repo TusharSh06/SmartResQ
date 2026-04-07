@@ -39,7 +39,7 @@ from archive_system import ArchiveSystem
 app = Flask(__name__)
 app.config['SECRET_KEY'] = Config.SECRET_KEY
 CORS(app, resources={r"/*": {"origins": "*"}})
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
 # Serve archive files
 from flask import send_from_directory
