@@ -37,8 +37,15 @@ from config import Config
 from archive_system import ArchiveSystem
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = Config.SECRET_KEY
-CORS(app, resources={r"/*": {"origins": "*"}})
+app.config['SECRET_KEY'] = Config.SECRET_KEY or 'dev-secret-key'
+
+# Robust CORS setup
+CORS(app, resources={r"/*": {
+    "origins": "*",
+    "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
+    "allow_headers": ["Content-Type", "Authorization"]
+}})
+
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
 # Serve archive files
@@ -53,8 +60,17 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 MONGO_URI = Config.MONGO_URI
 
-mongo_client = MongoClient(MONGO_URI)
-print(f"✅ Successfully initialized MongoDB connection to {MONGO_URI.split('@')[-1] if '@' in MONGO_URI else 'Cluster'}")
+if not MONGO_URI:
+    print("❌ ERROR: MONGO_URI environment variable is missing!")
+    # Fallback to local if missing, but will likely fail anyway
+    MONGO_URI = "mongodb://localhost:27017/smartresq"
+
+try:
+    mongo_client = MongoClient(MONGO_URI)
+    db_name = MONGO_URI.split('/')[-1].split('?')[0] or "smartresq"
+    print(f"✅ Attempting MongoDB connection...")
+except Exception as e:
+    print(f"❌ MongoDB Connection Error: {e}")
 users_col = mongo_client["smartresq"].users
 otp_col   = mongo_client["smartresq"].otp_store
 cameras_col = mongo_client["smartresq"].cameras
